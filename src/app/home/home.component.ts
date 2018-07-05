@@ -1,3 +1,4 @@
+import { ApiService } from './../api.service';
 import { Component, OnInit } from '@angular/core';
 
 @Component({
@@ -7,33 +8,27 @@ import { Component, OnInit } from '@angular/core';
 })
 export class HomeComponent implements OnInit {
 
-  title:string = "Please select from select box or Type for search";
-  searchedVal:string = ""; 
-  bankArr = ['Delhi', 'Banglore', 'Agra', 'Mumbai', 'Pune'];
-  values = [];
+  title: String = 'Please select from select box or Type for search';
+  public searchedVal: String = '';
+  bankArr = [];
+  values: any = [];
+  animate: boolean = false;
 
-  BASE_URL = 'https://app.fyle.in/api/bank_branches?city=';
-  FETCH_URL = this.BASE_URL + this.searchedVal + '&offset=0&limit=50';
-
-  constructor() {}
-
-  ngOnInit() {}
-
-  countryChange(e) {
-    this.FETCH_URL = this.BASE_URL + e.target.value.toUpperCase() + '&offset=0&limit=50';
-    fetch(this.FETCH_URL)
-    .then((res) => res.json())
-    .then((data) => this.values = data)
-    .catch((err) => console.log(err));
-    this.searchedVal = '';
+  constructor(private _api: ApiService) {
+    this.bankArr = this._api.bankArr;
   }
 
-  searchValChange() {
-    this.FETCH_URL = this.BASE_URL + this.searchedVal.toUpperCase() + '&offset=0&limit=50';
-    fetch(this.FETCH_URL)
-    .then((res) => res.json())
-    .then((data) => this.values = data)
-    .catch((err) => console.log(err));
-    this.searchedVal = '';
+  ngOnInit() {
+    
   }
+
+  selectCountryChange(el) {
+    this.animate = true;
+    this._api.selectCountryChange(el).subscribe(data => this.values = data, error => console.log('Error'), () => this.animate = false);
+  }
+
+  searchValChange(val) {
+    this.animate = true;
+    this._api.searchValChange(val.toUpperCase()).subscribe(data => this.values = data , error => console.log('Error'), () => this.animate = false);
+  }  
 }
